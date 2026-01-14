@@ -73,3 +73,40 @@ function handleCellClick(index) {
     }
 }
 
+function makeMove(index, player) {
+    board[index] = player;
+    cells[index].textContent = player;
+    cells[index].classList.add(player.toLowerCase());
+    cells[index].classList.add('disabled');
+}
+
+function checkWinner() {
+    for (let condition of winningConditions) {
+        const [a, b, c] = condition;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function getWinningCombination() {
+    for (let condition of winningConditions) {
+        const [a, b, c] = condition;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            return condition;
+        }
+    }
+    return null;
+}
+
+function highlightWinningCells() {
+    const winningCombo = getWinningCombination();
+    if (winningCombo) {
+        winningCombo.forEach(index => {
+            cells[index].classList.add('winning');
+        });
+    }
+}
+
+
