@@ -109,4 +109,64 @@ function highlightWinningCells() {
     }
 }
 
+function checkDraw() {
+    return board.every(cell => cell !== '');
+}
+
+function disableAllCells() {
+    cells.forEach(cell => {
+        cell.classList.add('disabled');
+    });
+}
+
+function makeAIMove() {
+    if (!gameActive) return;
+    
+    let bestMove = getBestMove();
+    if (bestMove !== -1) {
+        makeMove(bestMove, 'O');
+        
+        if (checkWinner()) {
+            gameActive = false;
+            scores['O']++;
+            updateScore();
+            statusElement.textContent = 'AI Wins!';
+            statusElement.classList.add('winner');
+            highlightWinningCells();
+            disableAllCells();
+            return;
+        }
+        
+        if (checkDraw()) {
+            gameActive = false;
+            statusElement.textContent = "It's a Draw!";
+            statusElement.classList.add('draw');
+            disableAllCells();
+            return;
+        }
+        
+        currentPlayer = 'X';
+        statusElement.textContent = `Player ${currentPlayer}'s Turn`;
+    }
+}
+
+function getBestMove() {
+    let bestScore = -Infinity;
+    let bestMove = -1;
+    
+    for (let i = 0; i < 9; i++) {
+        if (board[i] === '') {
+            board[i] = 'O';
+            let score = minimax(board, 0, false);
+            board[i] = '';
+            
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = i;
+            }
+        }
+    }
+    
+    return bestMove;
+}
 
