@@ -170,3 +170,76 @@ function getBestMove() {
     return bestMove;
 }
 
+function minimax(board, depth, isMaximizing) {
+    if (checkWinnerForPlayer('O')) {
+        return 10 - depth;
+    }
+    if (checkWinnerForPlayer('X')) {
+        return depth - 10;
+    }
+    if (checkDraw()) {
+        return 0;
+    }
+    
+    if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === '') {
+                board[i] = 'O';
+                let score = minimax(board, depth + 1, false);
+                board[i] = '';
+                bestScore = Math.max(score, bestScore);
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === '') {
+                board[i] = 'X';
+                let score = minimax(board, depth + 1, true);
+                board[i] = '';
+                bestScore = Math.min(score, bestScore);
+            }
+        }
+        return bestScore;
+    }
+}
+
+function checkWinnerForPlayer(player) {
+    for (let condition of winningConditions) {
+        const [a, b, c] = condition;
+        if (board[a] === player && board[b] === player && board[c] === player) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function updateScore() {
+    scoreXElement.textContent = scores.X;
+    scoreOElement.textContent = scores.O;
+}
+
+resetBtn.addEventListener('click', () => {
+    initGame();
+});
+
+twoPlayerBtn.addEventListener('click', () => {
+    gameMode = 'twoPlayer';
+    twoPlayerBtn.classList.add('active');
+    aiPlayerBtn.classList.remove('active');
+    initGame();
+});
+
+aiPlayerBtn.addEventListener('click', () => {
+    gameMode = 'ai';
+    aiPlayerBtn.classList.add('active');
+    twoPlayerBtn.classList.remove('active');
+    scores = { X: 0, O: 0 };
+    updateScore();
+    initGame();
+});
+
+initGame();
+
